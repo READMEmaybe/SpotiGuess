@@ -10,7 +10,7 @@ const callback = async(req, res) => {
 	const code = req.query.code;
 	try {
 		const tokenData = await getAccessToken(code);
-		const userData = await getUserData(tokenData.access_token);	
+		const userData = await getUserData(tokenData.access_token);
 		const token = jwt.sign({
 			id: userData.id,
 			displayName: userData.display_name,

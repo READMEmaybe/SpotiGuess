@@ -10,31 +10,29 @@ const getAccessToken = async(code) => {
 	const clientId = process.env.SPOTIFY_CLIENT_ID;
 	const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 	const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
-	const response = await fetch({
+	const response = await fetch('https://accounts.spotify.com/api/token', {
 		method: 'POST',
-		url: 'https://accounts.spotify.com/api/token',
-		params: {
+		headers: {
+			Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+		},
+		body: new URLSearchParams({
 			grant_type: 'authorization_code',
 			code,
 			redirect_uri: redirectUri,
-		},
-		headers: {
-			Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
-		}
+		}),
 	});
-	return response.data;
+	return response.json();
 }
 
 const getUserData = async(accessToken) => {
-	const response = await fetch({
+	const response = await fetch('https://api.spotify.com/v1/me', {
 		method: 'GET',
-		url: 'https://api.spotify.com/v1/me',
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
 		},
 	});
 
-	return response.data;
+	return response.json();
 }
 
 export { 
