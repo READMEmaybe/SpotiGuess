@@ -42,7 +42,16 @@ const callback = async(req, res) => {
 	}
 }
 
+const logout = (req, res) => {
+	res.clearCookie('token');
+	res.json({
+		status: 'success',
+		message: 'User logged out successfully',
+	});
+}
+
 export {
 	login,
 	callback,
+	logout,
 }
