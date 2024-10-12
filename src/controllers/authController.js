@@ -50,8 +50,21 @@ const logout = (req, res) => {
 	});
 }
 
+const getUserInfo = async (req, res) => {
+	try {
+		const userData = await getUserData(req.user.accessToken);
+		res.json({ userData});
+	} catch (error) {
+		console.error('Error fetching user data:', error);
+		res.status(500).json({
+			error: 'Failed to fetch user data',
+		});
+	}
+}
+
 export {
 	login,
 	callback,
 	logout,
+	getUserInfo,
 }
