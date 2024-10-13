@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<h1>Welcome, <span id="user-name"></span>!</h1>
+    <img id="profile-image" src="" alt="Profile Picture" style="width: 300px; height: 300px;">
+    <p>You're now logged in.</p>
+    <button onclick="logout()">Logout</button>
+
+    <script>
+        fetch('/auth/user')
+			.then(response => response.json())         
+			.then(data => {
+				console.log(data);
+                document.getElementById('user-name').textContent = data.userData.display_name;
+                document.getElementById('profile-image').src = data.userData.images[1].url;
+            });
+
+        function logout() {
+			fetch('/auth/logout', {
+				method: 'GET',
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				if (data.status === 'success') {
+					window.location.href = '/';
+				}
+			});
+		}
+    </script>
+</body>
+</html>
