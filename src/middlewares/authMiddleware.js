@@ -1,26 +1,25 @@
 import jwt from 'jsonwebtoken';
 
-const verifyToken = (req, res, next) => {
-	const token = req.cookies.token;
-	if (!token) {
-		return res.status(401).json({
-			status: 'error',
-			message: 'Unauthorized',
-		});
-	}
+const checkAuth = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) {
+    req.isAuthenticated = false;
+    return next();
+  }
 
-	try {
-		const decoded = jwt.verify(token, process.env.JWT_SECRET);
-		req.user = decoded;
-		next();
-	} catch (error) {
-		return res.status(401).json({
-			status: 'error',
-			message: 'Unauthorized: ' + error.message,
-		});
-	}
-}
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    req.isAuthenticated = true;
+    next();
+	// eslint-disable-next-line no-unused-vars
+  } catch (error) {
+    req.isAuthenticated = false;
+    next();
+  }
+};
+
 
 export {
-	verifyToken,
+	  checkAuth,
 };

@@ -43,6 +43,12 @@ const callback = async(req, res) => {
 }
 
 const logout = (req, res) => {
+	if (!req.isAuthenticated) {
+		return res.status(400).json({
+			status: 'error',
+			message: 'User not logged in',
+		});
+	}
 	res.clearCookie('token');
 	res.json({
 		status: 'success',
@@ -51,6 +57,12 @@ const logout = (req, res) => {
 }
 
 const getUserInfo = async (req, res) => {
+	if (!req.isAuthenticated) {
+		return res.status(400).json({
+			status: 'error',
+			message: 'User not logged in',
+		});
+	}
 	try {
 		const userData = await getUserData(req.user.accessToken);
 		res.json({ userData});
