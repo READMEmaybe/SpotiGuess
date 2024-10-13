@@ -11,6 +11,7 @@ const callback = async(req, res) => {
 	try {
 		const tokenData = await getAccessToken(code);
 		const userData = await getUserData(tokenData.access_token);
+		//TODO: Store access token and refresh token in database	
 		const token = jwt.sign({
 			id: userData.id,
 			displayName: userData.display_name,
