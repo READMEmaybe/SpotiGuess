@@ -3,21 +3,27 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="socket.io/socket.io.js"></script>
 	<title>Document</title>
 </head>
 <body>
 	<h1>Welcome, <span id="user-name"></span>!</h1>
     <img id="profile-image" src="" alt="Profile Picture" style="width: 300px; height: 300px;">
     <p>You're now logged in.</p>
+	<button onclick="createGame()">Create Game</button>
     <button onclick="logout()">Logout</button>
 
     <script>
+		const socket = io();
+		let userId;
         fetch('/auth/user')
 			.then(response => response.json())         
 			.then(data => {
-				console.log(data);
+				userId = data.userData.id;
                 document.getElementById('user-name').textContent = data.userData.display_name;
                 document.getElementById('profile-image').src = data.userData.images[1].url;
+
+				socket.emit('auth', userId);
             });
 
         function logout() {
@@ -32,6 +38,13 @@
 				}
 			});
 		}
+		function createGame() {
+			console.log('Creating game...');
+			socket.emit('create-game');
+		}
+		socket.on('game-created', (gameId) => {
+			console.log('Game created with ID:', gameId);
+		});
     </script>
 </body>
 </html>
