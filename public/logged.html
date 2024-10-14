@@ -11,6 +11,8 @@
     <img id="profile-image" src="" alt="Profile Picture" style="width: 300px; height: 300px;">
     <p>You're now logged in.</p>
 	<button onclick="createGame()">Create Game</button>
+	<!-- join game input and button -->
+	<input type="text" id="game-id" placeholder="Enter Game ID"><button onclick="joinGame()">Join Game</button>
     <button onclick="logout()">Logout</button>
 
     <script>
@@ -44,6 +46,20 @@
 		}
 		socket.on('game-created', (gameId) => {
 			console.log('Game created with ID:', gameId);
+		});
+
+		function joinGame() {
+			const gameId = document.getElementById('game-id').value;
+			console.log('Joining game with ID:', gameId);
+			socket.emit('join-game', gameId);
+		}
+
+		socket.on('game-joined', (gameId) => {
+			console.log('Joined game with ID:', gameId);
+		});
+		
+		socket.on('game-not-found', () => {
+			console.log('Game not found');
 		});
     </script>
 </body>

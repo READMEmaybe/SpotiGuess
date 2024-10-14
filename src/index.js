@@ -50,6 +50,20 @@ io.on('connection', (socket) => {
 		socket.join(gameId);
 		socket.emit('game-created', { gameId });
 	});
+
+	socket.on('join-game', (gameId) => {
+		if (!socket.userId) {
+			return;
+		}
+		const game = games.get(gameId);
+		if (!game) {
+			socket.emit('game-not-found');
+			return;
+		}
+		game.players.push(socket.userId);
+		socket.join(gameId);
+		io.to(gameId).emit('game-joined', { gameId });
+	});
 });
 
 server.listen(PORT, () => {
