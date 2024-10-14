@@ -22,19 +22,20 @@ const callback = async(req, res) => {
 
 		res.cookie('token', token, { httpOnly: true });
 
-		res.json({
-			status: 'success',
-			message: 'User logged in successfully',
-			data: {
-				token,
-				user: {
-					id: userData.id,
-					displayName: userData.display_name,
-					email: userData.email,
-					profileImage: userData.images[0].url,
-				},
-			},
-		});
+	//	res.json({
+	//		status: 'success',
+	//		message: 'User logged in successfully',
+	//		data: {
+	//			token,
+	//			user: {
+	//				id: userData.id,
+	//				displayName: userData.display_name,
+	//				email: userData.email,
+	//				profileImage: userData.images[0].url,
+	//			},
+	//		},
+	//	});
+		res.redirect('/');
 	} catch (error) {
 		res.status(500).json({
 			status: 'error',
