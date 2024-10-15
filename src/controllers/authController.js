@@ -1,9 +1,19 @@
 import jwt from 'jsonwebtoken';
-import { getAccessToken, getSpotifyAuthUrl, getUserData } from '../services/spotifyServices.js';
+import { getAccessToken, getSpotifyAuthUrl, getUserData} from '../services/spotifyServices.js';
 
 const login = (req, res) => {
 	const authUrl = getSpotifyAuthUrl();
 	res.redirect(authUrl);
+}
+
+const createToken = (userData, tokenData) => {
+	return jwt.sign({
+		id: userData.id,
+		displayName: userData.display_name,
+		email: userData.email,
+		accessToken: tokenData.access_token,
+		refreshToken: tokenData.refresh_token,
+	}, process.env.JWT_SECRET, { expiresIn: '5d' });
 }
 
 const callback = async(req, res) => {
@@ -11,30 +21,11 @@ const callback = async(req, res) => {
 	try {
 		const tokenData = await getAccessToken(code);
 		const userData = await getUserData(tokenData.access_token);
-		//TODO: Store access token and refresh token in database	
-		const token = jwt.sign({
-			id: userData.id,
-			displayName: userData.display_name,
-			email: userData.email,
-			accessToken: tokenData.access_token,
-			refreshToken: tokenData.refresh_token,
-		}, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-		res.cookie('token', token, { httpOnly: true });
-
-	//	res.json({
-	//		status: 'success',
-	//		message: 'User logged in successfully',
-	//		data: {
-	//			token,
-	//			user: {
-	//				id: userData.id,
-	//				displayName: userData.display_name,
-	//				email: userData.email,
-	//				profileImage: userData.images[0].url,
-	//			},
-	//		},
-	//	});
+		const token = createToken(userData, tokenData);
+		res.cookie('token', token, { 
+			httpOnly: true,
+			maxAge: 1000 * 60 * 60 * 24 * 5, // 7 days
+		});
 		res.redirect('/');
 	} catch (error) {
 		res.status(500).json({
@@ -76,9 +67,11 @@ const getUserInfo = async (req, res) => {
 	}
 }
 
+
 export {
 	login,
 	callback,
 	logout,
 	getUserInfo,
+	createToken,
 }
