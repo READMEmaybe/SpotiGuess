@@ -36,8 +36,26 @@ const getUserData = async(accessToken) => {
 	return response.json();
 }
 
+const refreshAccessToken = async(refreshToken) => {
+	const clientId = process.env.SPOTIFY_CLIENT_ID;
+	const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+	const response = await fetch('https://accounts.spotify.com/api/token', {
+		method: 'POST',
+		headers: {
+			'Authorization': `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
+			'Content-Type': 'application/x-www-form-urlencoded',
+		},
+		body: new URLSearchParams({
+			grant_type: 'refresh_token',
+			refresh_token: refreshToken,
+		}),
+	});
+	return response.json();
+}
+
 export { 
 	getSpotifyAuthUrl,
 	getAccessToken,
 	getUserData,
+	refreshAccessToken,
 };
