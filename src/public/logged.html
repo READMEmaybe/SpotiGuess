@@ -11,24 +11,24 @@
     <img id="profile-image" src="" alt="Profile Picture" style="width: 300px; height: 300px;">
     <p>You're now logged in.</p>
 	<button onclick="createGame()">Create Game</button>
-	<!-- join game input and button -->
 	<input type="text" id="game-id" placeholder="Enter Game ID"><button onclick="joinGame()">Join Game</button>
     <button onclick="logout()">Logout</button>
 
-    <script>
+	<script>
 		const socket = io();
 		let userId;
-        fetch('/auth/user')
+
+		fetch('/auth/user')
 			.then(response => response.json())         
 			.then(data => {
 				userId = data.userData.id;
-                document.getElementById('user-name').textContent = data.userData.display_name;
-                document.getElementById('profile-image').src = data.userData.images[1].url;
-
+		        document.getElementById('user-name').textContent = data.userData.display_name;
+		        document.getElementById('profile-image').src = data.userData.images[1].url;
+			
 				socket.emit('auth', userId);
-            });
-
-        function logout() {
+		    });
+		
+		function logout() {
 			fetch('/auth/logout', {
 				method: 'GET',
 			})
@@ -40,27 +40,28 @@
 				}
 			});
 		}
+
 		function createGame() {
 			console.log('Creating game...');
 			socket.emit('create-game');
 		}
-		socket.on('game-created', (gameId) => {
-			console.log('Game created with ID:', gameId);
-		});
 
 		function joinGame() {
 			const gameId = document.getElementById('game-id').value;
 			console.log('Joining game with ID:', gameId);
 			socket.emit('join-game', gameId);
 		}
+		socket.on('game-created', (gameId) => {
+			console.log('Game created with ID:', gameId);
+		});
 
 		socket.on('game-joined', (gameId) => {
 			console.log('Joined game with ID:', gameId);
 		});
-		
+
 		socket.on('game-not-found', () => {
 			console.log('Game not found');
 		});
-    </script>
+	</script>
 </body>
 </html>
