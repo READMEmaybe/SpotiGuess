@@ -53,9 +53,20 @@ const refreshAccessToken = async(refreshToken) => {
 	return response.json();
 }
 
+const getTrackInfo = async (accessToken, trackId) => {
+	const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
+	return response.json();	
+}
+
 export { 
 	getSpotifyAuthUrl,
 	getAccessToken,
 	getUserData,
 	refreshAccessToken,
+	getTrackInfo,
 };

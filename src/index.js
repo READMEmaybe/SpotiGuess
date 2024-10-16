@@ -8,6 +8,7 @@ import { Server } from 'socket.io';
 import { handleSocketConnection } from './services/socketServices.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import lyricRouter from './routes/lyrics.js';
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.json());
 app.use(cookieParser());
 
+app.use('/lyrics', lyricRouter);
 app.use('/auth', authRouter);
 app.get('/', checkAuth, (req, res) => {
 	if (req.isAuthenticated) {
