@@ -24,7 +24,7 @@ const callback = async(req, res) => {
 		const token = createToken(userData, tokenData);
 		res.cookie('token', token, { 
 			httpOnly: true,
-			maxAge: 1000 * 60 * 60 * 24 * 5, // 7 days
+			maxAge: 1000 * 60 * 60 * 24 * 5, // 5 days
 		});
 		res.redirect('/');
 	} catch (error) {
