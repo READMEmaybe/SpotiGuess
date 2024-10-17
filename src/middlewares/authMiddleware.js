@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
-import { createToken } from '../controllers/authController.js';
+import { createToken, login } from '../controllers/authController.js';
 import { getUserData, refreshAccessToken } from '../services/spotifyServices.js';
+
 
 const checkAuth = async (req, res, next) => {
   const token = req.cookies.token;
@@ -10,6 +11,7 @@ const checkAuth = async (req, res, next) => {
   }
 
   try {
+    console.log('URL: ', `${req.protocol}://${req.get('host')}${req.originalUrl}`);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log('decoded: ', decoded);
     if (!decoded) {
@@ -24,6 +26,12 @@ const checkAuth = async (req, res, next) => {
           // if refresh token succeeds, create new jwt and replace the cookie and set req.isAuthenticated to true
           const tokenData = await refreshAccessToken(decoded.refreshToken);
           console.log('refresh tokenData: ', tokenData);
+          if (tokenData.error) {
+            // try to login and redirect back to client
+            process.env.CLIENT_URL = `${req.protocol}://${req.get('host')}${req.originalUrl}`
+            print('process.env.CLIENT_URL: ', process.env.CLIENT_URL);
+            login(req, res);
+          }
           const userData = await getUserData(tokenData.access_token);
           const newToken = createToken(userData, tokenData);
           res.cookie('token', newToken, {
