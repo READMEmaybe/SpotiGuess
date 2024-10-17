@@ -16,14 +16,15 @@ const checkAuth = async (req, res, next) => {
       req.isAuthenticated = false;
       return next();
     }
+    const currentTime = Math.floor(Date.now() / 1000);
     // check if token is expired
-    const userData = await getUserData(decoded.accessToken);
-    console.log('userData: ', userData);
+    if (decoded.iat + 3600 < currentTime) {
     // if expired, refresh token
-    if (!userData.id) {
       try {
           // if refresh token succeeds, create new jwt and replace the cookie and set req.isAuthenticated to true
           const tokenData = await refreshAccessToken(decoded.refreshToken);
+          console.log('refresh tokenData: ', tokenData);
+          const userData = await getUserData(tokenData.access_token);
           const newToken = createToken(userData, tokenData);
           res.cookie('token', newToken, {
             httpOnly: true,

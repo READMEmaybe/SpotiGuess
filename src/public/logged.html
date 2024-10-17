@@ -16,16 +16,16 @@
 
 	<script>
 		const socket = io();
-		let userId;
+		let userData;
 
 		fetch('/auth/user')
 			.then(response => response.json())         
 			.then(data => {
-				userId = data.userData.id;
+				userData = data.userData;
 		        document.getElementById('user-name').textContent = data.userData.display_name;
 		        document.getElementById('profile-image').src = data.userData.images[1].url;
 			
-				socket.emit('auth', userId);
+				socket.emit('auth', data.userData);
 		    });
 		
 		function logout() {
@@ -43,7 +43,7 @@
 
 		function createGame() {
 			console.log('Creating game...');
-			socket.emit('create-game');
+			socket.emit('create-game', {});
 		}
 
 		function joinGame() {
